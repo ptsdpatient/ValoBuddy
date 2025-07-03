@@ -6,8 +6,9 @@ It uses only public information for individual users who provide their Riot ID v
 The project is built with Node.js and Discord.js, and does not store or expose sensitive data.
 I intend to use the API solely to enrich user experience in Discord communities around Valorant.
 
-<img src="banner.png" alt="Banner" width="100%"/>
+
 <div align="center">
+    <img src="banner.png" alt="Banner" width="75%"/>
   <img src="icon.png" alt="Icon" width="25%"/>
 </div>
 
