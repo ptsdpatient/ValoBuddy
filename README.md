@@ -8,7 +8,7 @@ I intend to use the API solely to enrich user experience in Discord communities 
 
 <img src="banner.png" alt="Banner" width="100%"/>
 <div align="center">
-  <img src="icon.png" alt="Icon" width="50%"/>
+  <img src="icon.png" alt="Icon" width="25%"/>
 </div>
 
 ### Invite Link 
