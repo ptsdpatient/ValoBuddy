@@ -1,4 +1,7 @@
-
+<img src="banner.png" alt="Banner" width="100%"/>
+<div align="center">
+  <img src="icon.png" alt="Icon" width="50%"/>
+</div>
 
 ### Invite Link 
 
