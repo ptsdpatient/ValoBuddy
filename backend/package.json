@@ -1,0 +1,17 @@
+{
+  "name": "valo-buddy",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.0.1",
+    "unofficial-valorant-api": "^2.3.1-stable.0"
+  }
+}

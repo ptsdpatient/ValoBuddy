@@ -1,0 +1,50 @@
+[
+    {
+        "name": "lastmatch",
+        "description": "Get most recent ranked match",
+        "options": [
+            {
+                "type": 3,
+                "name": "name",
+                "description": "Riot name",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "tag",
+                "description": "Riot tag",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "region",
+                "description": "Region (default: ap)",
+                "required": false
+            }
+        ]
+    },
+    {
+        "name": "mmr",
+        "description": "Get Valorant MMR",
+        "options": [
+            {
+                "type": 3,
+                "name": "name",
+                "description": "Riot name",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "tag",
+                "description": "Riot tag",
+                "required": true
+            },
+            {
+                "type": 3,
+                "name": "region",
+                "description": "Region (default: ap)",
+                "required": false
+            }
+        ]
+    }
+]
