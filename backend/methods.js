@@ -6,7 +6,7 @@ dotenv.config();
 const key = process.env.KEY
 
 
-export async function latestMatch(region, name, tag) {
+export async function lastmatch(region, name, tag) {
   const url = `https://api.henrikdev.xyz/valorant/v1/mmr-history/${region || 'ap'}/${name}/${tag}`;
 
   try {

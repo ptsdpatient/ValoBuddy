@@ -6,7 +6,7 @@ import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from 'di
 import fs from 'fs';
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf-8'));
 
-import {mmr, latestMatch } from './methods.js'
+import { mmr, lastmatch } from './methods.js'
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -15,11 +15,11 @@ dotenv.config();
 const token = process.env.TOKEN
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ]
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+    ]
 });
 
 // VAPI.getMMR({ region: 'na', name: 'TenZ', tag: 'GOAT', version: 'v1' }).then( async (res) => {
@@ -38,8 +38,8 @@ client.once('ready', async () => {
         try {
             console.log('🔁 Registering slash commands from JSON...');
             await rest.put(
-            Routes.applicationCommands(process.env.ID),
-            { body: commands }
+                Routes.applicationCommands(process.env.ID),
+                { body: commands }
             );
             console.log('✅ Slash commands registered!');
         } catch (err) {
@@ -47,61 +47,61 @@ client.once('ready', async () => {
         }
     })();
     client.guilds.cache.forEach(guild => {
-    console.log(`- ${guild.name} (ID: ${guild.id})`);
+        console.log(`- ${guild.name} (ID: ${guild.id})`);
     });
 });
 
 
 client.on('interactionCreate', async (interaction) => {
 
-  if (!interaction.isCommand()) return;
+    if (!interaction.isCommand()) return;
 
-  if (interaction.commandName === 'lastmatch') {
-    await interaction.deferReply({ flags: 64 });
+    if (interaction.commandName === 'lastmatch') {
+        await interaction.deferReply({ flags: 64 });
 
-    const name = interaction.options.getString('name');
-    const tag = interaction.options.getString('tag');
-    const region = interaction.options.getString('region') || 'ap';
+        const name = interaction.options.getString('name');
+        const tag = interaction.options.getString('tag');
+        const region = interaction.options.getString('region') || 'ap';
 
-    const match = await getLatestMatch(region, name, tag);
+        const match = await lastmatch(region, name, tag);
 
-    if (match.error) {
-      return interaction.editReply({
-        content: `❌ Error:\n\`\`\`${JSON.stringify(match.error, null, 2)}\`\`\``
-      });
+        if (match.error) {
+            return interaction.editReply({
+                content: `❌ Error:\n\`\`\`${JSON.stringify(match.error, null, 2)}\`\`\``
+            });
+        }
+
+        return interaction.editReply({
+            content: `🕹️ **Latest Match for ${name}#${tag}**\n` +
+                `📍 Map: ${match.map}\n` +
+                `🏷️ Rank: ${match.rank} (${match.elo} ELO)\n` +
+                `📈 MMR Change: ${match.mmr_change > 0 ? '+' : ''}${match.mmr_change}\n` +
+                `🗓️ Date: ${new Date(match.date).toLocaleString()}\n` +
+                `📅 Season: ${match.season}`
+        });
     }
 
-    return interaction.editReply({
-      content: `🕹️ **Latest Match for ${name}#${tag}**\n` +
-               `📍 Map: ${match.map}\n` +
-               `🏷️ Rank: ${match.rank} (${match.elo} ELO)\n` +
-               `📈 MMR Change: ${match.mmr_change > 0 ? '+' : ''}${match.mmr_change}\n` +
-               `🗓️ Date: ${new Date(match.date).toLocaleString()}\n` +
-               `📅 Season: ${match.season}`
-    });
-  }
+    if (interaction.commandName === 'mmr') {
+        await interaction.deferReply({ flags: 64 });
 
-  if (interaction.commandName === 'mmr') {
-    await interaction.deferReply({ flags: 64 });
+        const name = interaction.options.getString('name');
+        const tag = interaction.options.getString('tag');
+        const region = interaction.options.getString('region') || 'ap';
 
-    const name = interaction.options.getString('name');
-    const tag = interaction.options.getString('tag');
-    const region = interaction.options.getString('region') || 'ap';
+        const mmrData = await mmr(region, name, tag);
 
-    const mmrData = await mmr(region, name, tag);
+        if (mmrData.error || !mmrData.data) {
+            return interaction.editReply({
+                content: `❌ Error:\n\`\`\`Something is wrong in the provided information!\`\`\``
+            });
+        }
 
-    if (mmrData.error || !mmrData.data) {
-      return interaction.editReply({
-        content: `❌ Error:\n\`\`\`Something is wrong in the provided information!\`\`\``
-      });
+        const { currenttierpatched, elo, ranking_in_tier } = mmrData.data;
+
+        return interaction.editReply({
+            content: `🎯 **${name}#${tag}**\n${currenttierpatched} (${elo} ELO)\nRank progress: ${ranking_in_tier}/100`
+        });
     }
-
-    const { currenttierpatched, elo, ranking_in_tier } = mmrData.data;
-
-    return interaction.editReply({
-      content: `🎯 **${name}#${tag}**\n${currenttierpatched} (${elo} ELO)\nRank progress: ${ranking_in_tier}/100`
-    });
-  }
 });
 
 
