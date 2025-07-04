@@ -42,19 +42,30 @@ export async function lastmatch(region, name, tag) {
   }
 }
 
+
+
 export async function info(region, name, tag) {
-  const url = `https://api.henrikdev.xyz/valorant/v1/mmr/${region || 'ap'}/${name}/${tag}`;
+  const mmrUrl = `https://api.henrikdev.xyz/valorant/v1/mmr/${region || 'ap'}/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
+  const accountUrl = `https://api.henrikdev.xyz/valorant/v1/account/${encodeURIComponent(name)}/${encodeURIComponent(tag)}`;
 
   try {
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: key
-      }
-    });
+    const [mmrResponse, accountResponse] = await Promise.all([
+      axios.get(mmrUrl, {
+        headers: { Authorization: key }
+      }),
+      axios.get(accountUrl, {
+        headers: { Authorization: key }
+      })
+    ]);
 
-    // console.log(JSON.stringify(response.data.data))
+    console.log(JSON.stringify(accountResponse.data))
 
-    return response.data;
+    return {
+      infoData: mmrResponse.data,
+      accountData: accountResponse.data,
+      error:false
+    };
+
   } catch (err) {
     return {
       error: err.response?.data || err.message,

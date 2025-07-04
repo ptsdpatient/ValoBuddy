@@ -28,50 +28,9 @@
     },
     {
         "name": "lastmatch",
-        "description": "Get most recent ranked match",
-        "options": [
-            {
-                "type": 3,
-                "name": "name",
-                "description": "Riot name",
-                "required": false
-            },
-            {
-                "type": 3,
-                "name": "tag",
-                "description": "Riot tag",
-                "required": false
-            },
-            {
-                "type": 3,
-                "name": "region",
-                "description": "Region (default: ap)",
-                "required": false
-            }
-        ]
-    },
-    {
+        "description": "Get most recent ranked match"        
+    },{
         "name": "info",
-        "description": "Get statistics of your profile.",
-        "options": [
-            {
-                "type": 3,
-                "name": "name",
-                "description": "Riot name",
-                "required": false
-            },
-            {
-                "type": 3,
-                "name": "tag",
-                "description": "Riot tag",
-                "required": false
-            },
-            {
-                "type": 3,
-                "name": "region",
-                "description": "Region (default: ap)",
-                "required": false
-            }
-        ]
+        "description": "Get statistics of your profile."        
     }
 ]
