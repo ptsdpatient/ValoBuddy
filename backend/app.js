@@ -9,7 +9,7 @@ import fs from 'fs';
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf-8'));
 
 import { info, lastmatch } from './methods.js'
-import { mapImages ,agentImages } from './images.js';
+import { mapImages, agentImages } from './images.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -67,7 +67,19 @@ client.on('interactionCreate', async (interaction) => {
         const tag = interaction.options.getString('tag');
         const region = interaction.options.getString('region') || 'ap';
 
-        const {matchData,leaderBoard} = await lastmatch(region, name, tag);
+        if (!name || !tag) {
+            const userData = await get('users.json', interaction.user.id);
+            if (!userData) {
+                return interaction.editReply({
+                    content: '⚠️ Please provide name and tag, or log in first using `/login`.'
+                });
+            }
+            name = userData.name;
+            tag = userData.tag;
+            region = userData.region || 'ap';
+        }
+        
+        const { matchData, leaderBoard } = await lastmatch(region, name, tag);
 
         if (matchData.error) {
             return interaction.editReply({
@@ -94,7 +106,7 @@ client.on('interactionCreate', async (interaction) => {
         // fs.writeFileSync('output.txt', JSON.stringify(leaderBoard), 'utf8');
 
         const { metadata, players } = leaderBoard.data;
-        
+
 
         const redTeam = players.all_players.filter(p => p.team === 'Red');
         const blueTeam = players.all_players.filter(p => p.team === 'Blue');
@@ -142,11 +154,23 @@ client.on('interactionCreate', async (interaction) => {
 
     if (interaction.commandName === 'info') {
         try {
-            await interaction.deferReply(); // or true if you want private response
+            await interaction.deferReply();
 
             const name = interaction.options.getString('name');
             const tag = interaction.options.getString('tag');
             const region = interaction.options.getString('region') || 'ap';
+
+            if (!name || !tag) {
+                const userData = await get('users.json', interaction.user.id);
+                if (!userData) {
+                    return interaction.editReply({
+                        content: '⚠️ Please provide name and tag, or log in first using `/login`.'
+                    });
+                }
+                name = userData.name;
+                tag = userData.tag;
+                region = userData.region || 'ap';
+            }
 
             const infoData = await info(region, name, tag);
 
@@ -169,6 +193,91 @@ client.on('interactionCreate', async (interaction) => {
                 .setColor(0x5865F2)
                 .setFooter({ text: "Powered by Valorant Unofficial API" });
 
+
+            return interaction.editReply({ embeds: [embed] });
+
+        } catch (err) {
+            console.error("❌ Failed to handle /info command:", err);
+
+            if (!interaction.replied && !interaction.deferred) {
+                return interaction.reply({
+                    content: '⚠️ Something went wrong while processing the command.',
+                    ephemeral: true
+                }).catch(() => { });
+            }
+
+            return interaction.editReply({
+                content: '⚠️ Something went wrong while processing the command.'
+            });
+        }
+    }
+
+    if (interaction.commandName === 'logout') {
+        try {
+            await interaction.deferReply({ ephemeral: true });
+
+            const userData = await get('users.json', interaction.user.id);
+
+            if (!userData) {
+                return interaction.editReply({
+                    content: "⚠️ You are not logged in. No data found.",
+                    ephemeral: true
+                });
+            }
+
+            await remove('users.json', interaction.user.id);
+
+            const embed = new EmbedBuilder()
+                .setTitle('🚪 Logged Out Successfully')
+                .setDescription(`Your data has been removed from the database.`)
+                .addFields(
+                    { name: 'Username', value: userData.name, inline: true },
+                    { name: 'Tag', value: userData.tag, inline: true },
+                    { name: 'Region', value: userData.region || 'ap', inline: true }
+                )
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Red')
+                .setFooter({ text: `User ID: ${interaction.user.id}` })
+                .setTimestamp();
+
+            return interaction.editReply({ embeds: [embed] });
+
+        } catch (err) {
+            console.error('Logout error:', err);
+            return interaction.editReply({
+                content: "❌ An error occurred while logging out.",
+                ephemeral: true
+            });
+        }
+    }
+
+    if (interaction.commandName === 'login') {
+        try {
+            await interaction.deferReply();
+
+            const name = interaction.options.getString('name');
+            const tag = interaction.options.getString('tag');
+            const region = interaction.options.getString('region') || 'ap';
+
+
+            await set('users.json', interaction.user.id, {
+                name: name,
+                tag: tag,
+                region: region || 'ap'
+            });
+
+            const embed = new EmbedBuilder()
+                .setTitle('✅ Logged In Successfully')
+                .setDescription(`You have been logged in with the following credentials:`)
+                .addFields(
+                    { name: 'Username', value: name, inline: true },
+                    { name: 'Tag', value: tag, inline: true },
+                    { name: 'Region', value: region || 'ap', inline: true }
+                )
+                .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+                .setColor('Green')
+                .setFooter({ text: `User ID: ${interaction.user.id}` })
+                .setTimestamp();
 
             return interaction.editReply({ embeds: [embed] });
 
