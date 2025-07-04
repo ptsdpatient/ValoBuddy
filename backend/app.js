@@ -1,23 +1,20 @@
-import ValorantAPI from 'unofficial-valorant-api';
+// import ValorantAPI from 'unofficial-valorant-api';
 
 // const VAPI = new ValorantAPI();
+
+import { set, get, getAll, remove } from './db.js';
 
 import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } from 'discord.js';
 import fs from 'fs';
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf-8'));
 
 import { info, lastmatch } from './methods.js'
+import { mapImages ,agentImages } from './images.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
-const mapImages = {
-    Bind: new AttachmentBuilder('./images/maps/Bind/image.jpg'),
-    Haven: new AttachmentBuilder('./images/maps/Haven/image.jpg'),
-    Ascent: new AttachmentBuilder('./images/maps/Ascent/image.jpg'),
-    Icebox: new AttachmentBuilder('./images/maps/Icebox/image.jpg'),
-    Split: new AttachmentBuilder('./images/maps/Split/image.jpg'),
-}
+
 
 const token = process.env.TOKEN
 
@@ -82,7 +79,7 @@ client.on('interactionCreate', async (interaction) => {
             .setDescription(`Latest match details for **${matchData.currenttierpatched}** tier.`)
             .setColor(0x00BFFF)
             .setThumbnail(matchData.images.small)
-            .setImage('attachment://image.jpg')
+            .setImage(`attachment://${matchData.map.name}.png`)
             .addFields(
                 { name: '🏷️ Rank', value: `${matchData.currenttierpatched}`, inline: true },
                 { name: '📈 ELO', value: `${matchData.elo}`, inline: true },
@@ -93,7 +90,8 @@ client.on('interactionCreate', async (interaction) => {
             )
             .setFooter({ text: `Match ID: ${matchData.match_id}` })
             .setTimestamp(new Date(matchData.date_raw * 1000));
-        fs.writeFileSync('output.txt', JSON.stringify(leaderBoard), 'utf8');
+
+        // fs.writeFileSync('output.txt', JSON.stringify(leaderBoard), 'utf8');
 
         const { metadata, players } = leaderBoard.data;
         
