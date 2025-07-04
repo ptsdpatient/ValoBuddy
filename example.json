@@ -1,0 +1,21 @@
+{
+  "currenttier": 10,
+  "currenttierpatched": "Silver 2",
+  "images": {
+    "small": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/10/smallicon.png",
+    "large": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/10/largeicon.png",
+    "triangle_down": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/10/ranktriangledownicon.png",
+    "triangle_up": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/10/ranktriangleupicon.png"
+  },
+  "match_id": "0d37986c-42dc-4d7a-bd25-223f1568b95e",
+  "map": {
+    "id": "2c9d57ec-4431-9c5e-2939-8f9ef6dd5cba",
+    "name": "Bind"
+  },
+  "season_id": "ac12e9b3-47e6-9599-8fa1-0bb473e5efc7",
+  "ranking_in_tier": 33,
+  "mmr_change_to_last_game": 23,
+  "elo": 733,
+  "date": "Wednesday, July 02, 2025 02:06 PM",
+  "date_raw": 1751465160
+}

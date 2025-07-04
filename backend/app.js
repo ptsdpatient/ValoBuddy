@@ -2,15 +2,22 @@ import ValorantAPI from 'unofficial-valorant-api';
 
 // const VAPI = new ValorantAPI();
 
-import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder } from 'discord.js';
+import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } from 'discord.js';
 import fs from 'fs';
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf-8'));
 
-import { mmr, lastmatch } from './methods.js'
+import { info, lastmatch } from './methods.js'
 
 import dotenv from 'dotenv';
 dotenv.config();
 
+const mapImages = {
+    Bind: new AttachmentBuilder('./images/maps/Bind/image.jpg'),
+    Haven: new AttachmentBuilder('./images/maps/Haven/image.jpg'),
+    Ascent: new AttachmentBuilder('./images/maps/Ascent/image.jpg'),
+    Icebox: new AttachmentBuilder('./images/maps/Icebox/image.jpg'),
+    Split: new AttachmentBuilder('./images/maps/Split/image.jpg'),
+}
 
 const token = process.env.TOKEN
 
@@ -57,51 +64,134 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === 'lastmatch') {
-        await interaction.deferReply({ flags: 64 });
+        await interaction.deferReply();
 
         const name = interaction.options.getString('name');
         const tag = interaction.options.getString('tag');
         const region = interaction.options.getString('region') || 'ap';
 
-        const match = await lastmatch(region, name, tag);
+        const {matchData,leaderBoard} = await lastmatch(region, name, tag);
 
-        if (match.error) {
+        if (matchData.error) {
             return interaction.editReply({
-                content: `❌ Error:\n\`\`\`${JSON.stringify(match.error, null, 2)}\`\`\``
+                content: `❌ Error:\n\`\`\`${JSON.stringify(matchData.error, null, 2)}\`\`\``
             });
         }
+        const embed1 = new EmbedBuilder()
+            .setTitle(`📊 Valorant Ranked Match Summary`)
+            .setDescription(`Latest match details for **${matchData.currenttierpatched}** tier.`)
+            .setColor(0x00BFFF)
+            .setThumbnail(matchData.images.small)
+            .setImage('attachment://image.jpg')
+            .addFields(
+                { name: '🏷️ Rank', value: `${matchData.currenttierpatched}`, inline: true },
+                { name: '📈 ELO', value: `${matchData.elo}`, inline: true },
+                { name: '📍 Map', value: `${matchData.map.name}`, inline: true },
+                { name: '📊 Tier Ranking', value: `${matchData.ranking_in_tier}/100`, inline: true },
+                { name: '🔺 MMR Change', value: `${matchData.mmr_change_to_last_game > 0 ? '+' : ''}${matchData.mmr_change_to_last_game}`, inline: true },
+                { name: '🗓️ Date', value: `${matchData.date}`, inline: false }
+            )
+            .setFooter({ text: `Match ID: ${matchData.match_id}` })
+            .setTimestamp(new Date(matchData.date_raw * 1000));
+        fs.writeFileSync('output.txt', JSON.stringify(leaderBoard), 'utf8');
+
+        const { metadata, players } = leaderBoard.data;
+        
+
+        const redTeam = players.all_players.filter(p => p.team === 'Red');
+        const blueTeam = players.all_players.filter(p => p.team === 'Blue');
+
+        const formatTeam = (teamPlayers, teamColor) => {
+            let str = `\`\`\`fix\n# Player            Agent     Tier       K/D/A     Score  Dmg\n-------------------------------------------------------------\n`;
+            teamPlayers
+                .sort((a, b) => b.stats.score - a.stats.score)
+                .forEach((p, idx) => {
+                    const nameTag = `${p.name}#${p.tag}`.padEnd(18);
+                    const agent = p.character.padEnd(9);
+                    const tier = p.currenttier_patched.padEnd(10);
+                    const kda = `${p.stats.kills}/${p.stats.deaths}/${p.stats.assists}`.padEnd(9);
+                    const score = p.stats.score.toString().padStart(5);
+                    const dmg = p.damage_made.toString().padStart(4);
+                    str += `${(idx + 1).toString().padStart(2)} ${nameTag}${agent}${tier}${kda}${score} ${dmg}\n`;
+                });
+            str += '```';
+            return str;
+        };
+
+        const matchInfo =
+            `🗺️ **Map:** ${metadata.map}\n` +
+            `🎮 **Mode:** ${metadata.mode}\n` +
+            `🕒 **Started:** ${metadata.game_start_patched}\n` +
+            `📍 **Region:** ${metadata.region} (${metadata.cluster})\n` +
+            `🔢 **Rounds Played:** ${metadata.rounds_played}`;
+
+        const embed2 = new EmbedBuilder()
+            .setTitle(`🏆 Valorant Match Summary`)
+            .setDescription(matchInfo)
+            .addFields(
+                { name: '🔴 Red Team', value: formatTeam(redTeam, 'Red') },
+                { name: '🔵 Blue Team', value: formatTeam(blueTeam, 'Blue') }
+            )
+            .setColor(0x5865F2)
+            .setFooter({ text: 'Powered by Valorant Unofficial API' });
+
 
         return interaction.editReply({
-            content: `🕹️ **Latest Match for ${name}#${tag}**\n` +
-                `📍 Map: ${match.map}\n` +
-                `🏷️ Rank: ${match.rank} (${match.elo} ELO)\n` +
-                `📈 MMR Change: ${match.mmr_change > 0 ? '+' : ''}${match.mmr_change}\n` +
-                `🗓️ Date: ${new Date(match.date).toLocaleString()}\n` +
-                `📅 Season: ${match.season}`
+            embeds: [embed1, embed2],
+            files: [mapImages[matchData.map.name] || mapImages["Ascent"]]
         });
     }
 
-    if (interaction.commandName === 'mmr') {
-        await interaction.deferReply({ flags: 64 });
+    if (interaction.commandName === 'info') {
+        try {
+            await interaction.deferReply(); // or true if you want private response
 
-        const name = interaction.options.getString('name');
-        const tag = interaction.options.getString('tag');
-        const region = interaction.options.getString('region') || 'ap';
+            const name = interaction.options.getString('name');
+            const tag = interaction.options.getString('tag');
+            const region = interaction.options.getString('region') || 'ap';
 
-        const mmrData = await mmr(region, name, tag);
+            const infoData = await info(region, name, tag);
 
-        if (mmrData.error || !mmrData.data) {
+            if (infoData.error || !infoData.data) {
+                return interaction.editReply({
+                    content: `❌ Error:\n\`\`\`Something is wrong in the provided information!\`\`\``
+                });
+            }
+
+            const embed = new EmbedBuilder()
+                .setTitle(`📊 Rank Info - ${infoData.data.name}#${infoData.data.tag}`)
+                .setThumbnail(infoData.data.images.small || null)
+                .setImage(infoData.data.images.large || null)
+                .addFields(
+                    { name: "Current Rank", value: infoData.data.currenttierpatched || "Unknown", inline: true },
+                    { name: "ELO", value: infoData.data.elo?.toString() || "N/A", inline: true },
+                    { name: "Rank Progress", value: `${infoData.data.ranking_in_tier ?? "?"}/100`, inline: true },
+                    { name: "Last Match MMR Change", value: `${infoData.data.mmr_change_to_last_game >= 0 ? "+" : ""}${infoData.data.mmr_change_to_last_game} MMR`, inline: true }
+                )
+                .setColor(0x5865F2)
+                .setFooter({ text: "Powered by Valorant Unofficial API" });
+
+
+            return interaction.editReply({ embeds: [embed] });
+
+        } catch (err) {
+            console.error("❌ Failed to handle /info command:", err);
+
+            if (!interaction.replied && !interaction.deferred) {
+                return interaction.reply({
+                    content: '⚠️ Something went wrong while processing the command.',
+                    ephemeral: true
+                }).catch(() => { });
+            }
+
             return interaction.editReply({
-                content: `❌ Error:\n\`\`\`Something is wrong in the provided information!\`\`\``
+                content: '⚠️ Something went wrong while processing the command.'
             });
         }
-
-        const { currenttierpatched, elo, ranking_in_tier } = mmrData.data;
-
-        return interaction.editReply({
-            content: `🎯 **${name}#${tag}**\n${currenttierpatched} (${elo} ELO)\nRank progress: ${ranking_in_tier}/100`
-        });
     }
+
+
+
 });
 
 

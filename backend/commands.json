@@ -24,7 +24,7 @@
         ]
     },
     {
-        "name": "mmr",
+        "name": "info",
         "description": "Get Valorant MMR",
         "options": [
             {

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ export async function lastmatch(region, name, tag) {
   try {
     const res = await axios.get(url, {
       headers: {
-        Authorization: process.env.KEY
+        Authorization: key
       }
     });
 
@@ -20,16 +21,19 @@ export async function lastmatch(region, name, tag) {
       return { error: 'No match history found.' };
     }
 
-    const match = res.data.data[0];
+    const matchResponse = await axios.get(`https://api.henrikdev.xyz/valorant/v2/match/${res.data.data[0].match_id}`,{
+      headers: {
+        Authorization: key
+      }
+    })
+
+
 
     return {
-      map: match.map,
-      rank: match.currenttierpatched,
-      elo: match.elo,
-      mmr_change: match.mmr_change_to_last_game,
-      date: match.date,
-      season: match.season,
+      matchData:res.data.data[0],
+      leaderBoard:matchResponse.data
     };
+
   } catch (err) {
     return {
       error: err.response?.data || err.message,
@@ -38,7 +42,7 @@ export async function lastmatch(region, name, tag) {
   }
 }
 
-export async function mmr(region, name, tag) {
+export async function info(region, name, tag) {
   const url = `https://api.henrikdev.xyz/valorant/v1/mmr/${region || 'ap'}/${name}/${tag}`;
 
   try {
@@ -47,6 +51,8 @@ export async function mmr(region, name, tag) {
         Authorization: key
       }
     });
+
+    // console.log(JSON.stringify(response.data.data))
 
     return response.data;
   } catch (err) {
