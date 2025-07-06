@@ -28,7 +28,7 @@ async function save(file, data) {
 export async function get(file, key) {
   const data = await load(file);
   return data[key] ?? null;
-}
+} 
 
 export async function set(file, key, value) {
   const data = await load(file);

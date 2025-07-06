@@ -20,17 +20,88 @@
                 "name": "region",
                 "description": "Region (default: ap)",
                 "required": false
+            },{
+                "type": 6,
+                "name": "discord_user",
+                "description": "Discord Username",
+                "required": false
             }
         ]
     },{
         "name": "logout",
         "description": "Logout from ValoBuddy"        
+    },{
+        "name": "agents",
+        "description": "Get agents suggestion and statistics.",
+        "options": [
+            {
+                "type": 3,
+                "name": "role",
+                "description": "Role name (Duelist, Controller)",
+                "required": false
+            },{
+                "type": 3,
+                "name": "map",
+                "description": "Map name",
+                "required": false
+            },{
+                "type": 3,
+                "name": "agent",
+                "description": "Agent name",
+                "required": false
+            }
+        ]
     },
     {
         "name": "lastmatch",
-        "description": "Get most recent ranked match"        
+        "description": "Get most recent ranked match",
+        "options": [
+            {
+                "type": 6,
+                "name": "discord_user",
+                "description": "Discord Username",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "name",
+                "description": "Riot name",
+                "required": false
+            },{
+                "type": 3,
+                "name": "tag",
+                "description": "Riot tag",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "region",
+                "description": "Region (default: ap)",
+                "required": false
+            }
+        ]        
     },{
         "name": "info",
-        "description": "Get statistics of your profile."        
+        "description": "Get statistics of your profile.",
+        "options": [
+            {
+                "type": 3,
+                "name": "name",
+                "description": "Riot name",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "tag",
+                "description": "Riot tag",
+                "required": false
+            },
+            {
+                "type": 3,
+                "name": "region",
+                "description": "Region (default: ap)",
+                "required": false
+            }
+        ]         
     }
 ]

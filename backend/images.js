@@ -14,6 +14,13 @@ export const mapImages = {
     Corrode: new AttachmentBuilder('./images/maps/Corrode.png'),
 };
 
+export const agentRoles = {
+  Duelist: new AttachmentBuilder('./images/roles/duelist.png').setName('duelist.png'),
+  Controller: new AttachmentBuilder('./images/roles/controller.png').setName('controller.png'),
+  Initiator: new AttachmentBuilder('./images/roles/initiator.png').setName('initiator.png'),
+  Sentinel: new AttachmentBuilder('./images/roles/sentinel.png').setName('sentinel.png')
+};
+
 export const agentImages = {
     Astra: new AttachmentBuilder('./images/agents/Astra.png'),
     Breach: new AttachmentBuilder('./images/agents/Breach.png'),

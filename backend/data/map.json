@@ -1,0 +1,767 @@
+{
+    "Ascent": {
+        "best": {
+            "Duelist": [
+                {
+                    "name": "Jett",
+                    "complement": [
+                        "Phoenix",
+                        "Yoru",
+                        "Raze"
+                    ]
+                },
+                {
+                    "name": "Neon",
+                    "complement": [
+                        "Phoenix",
+                        "Yoru",
+                        "Raze"
+                    ]
+                }
+            ],
+            "Initiator": [
+                {
+                    "name": "Sova",
+                    "complement": [
+                        "Kayo",
+                        "Breach"
+                    ]
+                }
+            ],
+            "Controller": [
+                "Omen",
+                "Astra"
+            ],
+            "Sentinel": [
+                {
+                    "name": "Killjoy",
+                    "complement": [
+                        "Sage",
+                        "Deadlock"
+                    ]
+                }
+            ]
+        },
+        "better": {
+            "Duelist": [
+                "Raze",
+                "Yoru",
+                "Phoenix",
+                "Waylay"
+            ],
+            "Initiator": [
+                "Fade",
+                "Skye",
+                "Tejo"
+            ],
+            "Controller": [
+                {
+                    "name": "Clove",
+                    "complement": [
+                        "Viper"
+                    ]
+                },
+                {
+                    "name": "Brimstone",
+                    "complement": [
+                        "Viper"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                "Cypher",
+                "Sage",
+                "Deadlock",
+                "Vyse"
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Reyna",
+                "Iso"
+            ],
+            "Initiator": [
+                {
+                    "name": "Gekko",
+                    "complement": [
+                        "Tejo"
+                    ]
+                },
+                {
+                    "name": "Kayo",
+                    "complement": [
+                        "Tejo"
+                    ]
+                }
+            ],
+            "Controller": [
+                "Harbor",
+                "Viper"
+            ],
+            "Sentinel": [
+                "Chamber"
+            ]
+        }
+    },
+    "Bind": {
+        "best": {
+            "Duelist": [
+                "Raze",
+                "Neon",
+                "Yoru"
+            ],
+            "Initiator": [
+                "Fade",
+                "Gekko",
+                "Skye"
+            ],
+            "Controller": [
+                {
+                    "name": "Brimstone",
+                    "complement": [
+                        "Viper"
+                    ]
+                },
+                {
+                    "name": "Clove",
+                    "complement": [
+                        "Viper"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                {
+                    "name": "Cypher",
+                    "complement": [
+                        "Chamber"
+                    ]
+                },
+                {
+                    "name": "Deadlock",
+                    "complement": [
+                        "Chamber"
+                    ]
+                },
+                {
+                    "name": "Sage",
+                    "complement": [
+                        "Chamber"
+                    ]
+                },
+                {
+                    "name": "Vyse",
+                    "complement": [
+                        "Chamber"
+                    ]
+                }
+            ]
+        },
+        "better": {
+            "Duelist": [
+                "Reyna",
+                "Jett",
+                "Iso"
+            ],
+            "Initiator": [
+                {
+                    "name": "Sova",
+                    "complement": [
+                        "Tejo"
+                    ]
+                }
+            ],
+            "Controller": [
+                "Astra",
+                "Omen"
+            ],
+            "Sentinel": [
+                "Chamber"
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Waylay",
+                "Phoenix"
+            ],
+            "Initiator": [
+                "Tejo",
+                "Breach"
+            ],
+            "Controller": [
+                "Harbor",
+                "Viper"
+            ],
+            "Sentinel": [
+                "Killjoy"
+            ]
+        }
+    },
+    "Corrode": {
+        "best": {
+            "Duelist": [
+                "Neon",
+                "Yoru",
+                "Phoenix",
+                "Raze"
+            ],
+            "Initiator": [
+                {
+                    "name": "Sova",
+                    "complement": [
+                        "Tejo"
+                    ]
+                },
+                {
+                    "name": "Fade",
+                    "complement": [
+                        "Tejo"
+                    ]
+                },
+                {
+                    "name": "Gekko",
+                    "complement": [
+                        "Tejo"
+                    ]
+                }
+            ],
+            "Controller": [
+                {
+                    "name": "Omen",
+                    "complement": [
+                        "Viper"
+                    ]
+                },
+                {
+                    "name": "Brimstone",
+                    "complement": [
+                        "Viper"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                {
+                    "name": "Cypher",
+                    "complement": [
+                        "Sage",
+                        "Deadlock"
+                    ]
+                },
+                {
+                    "name": "Vyse",
+                    "complement": [
+                        "Sage",
+                        "Deadlock"
+                    ]
+                }
+            ]
+        },
+        "better": {
+            "Duelist": [
+                "Iso",
+                "Waylay"
+            ],
+            "Initiator": [
+                "Tejo"
+            ],
+            "Controller": [
+                "Clove"
+            ],
+            "Sentinel": [
+                "Deadlock",
+                "Chamber",
+                "Sage"
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Jett",
+                "Reyna"
+            ],
+            "Initiator": [
+                {
+                    "name": "Skye",
+                    "complement": [
+                        "Kayo"
+                    ]
+                }
+            ],
+            "Controller": [
+                "Harbor",
+                "Viper"
+            ],
+            "Sentinel": [
+                "Killjoy"
+            ]
+        }
+    },
+    "Sunset": {
+        "best": {
+            "Duelist": [
+                {
+                    "name": "Neon",
+                    "complement": [
+                        "Waylay"
+                    ]
+                },
+                {
+                    "name": "Raze",
+                    "complement": [
+                        "Waylay"
+                    ]
+                },
+                {
+                    "name": "Phoenix",
+                    "complement": [
+                        "Waylay"
+                    ]
+                }
+            ],
+            "Initiator": [
+                {
+                    "name": "Fade",
+                    "complement": [
+                        "Gekko"
+                    ]
+                }
+            ],
+            "Controller": [
+                {
+                    "name": "Omen",
+                    "complement": [
+                        "Viper"
+                    ]
+                },
+                {
+                    "name": "Brimstone",
+                    "complement": [
+                        "Viper"
+                    ]
+                },
+                {
+                    "name": "Clove",
+                    "complement": [
+                        "Viper"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                {
+                    "name": "Cypher",
+                    "complement": [
+                        "Sage"
+                    ]
+                },
+                {
+                    "name": "Chamber",
+                    "complement": [
+                        "Sage"
+                    ]
+                },
+                {
+                    "name": "Vyse",
+                    "complement": [
+                        "Sage"
+                    ]
+                }
+            ]
+        },
+        "better": {
+            "Duelist": [
+                "Jett",
+                "Iso",
+                "Waylay",
+                "Yoru"
+            ],
+            "Initiator": [
+                "Sova",
+                "Skye",
+                "Gekko",
+                "Breach"
+            ],
+            "Controller": [
+                "Astra"
+            ],
+            "Sentinel": [
+                {
+                    "name": "Killjoy",
+                    "complement": [
+                        "Deadlock"
+                    ]
+                },
+                {
+                    "name": "Sage",
+                    "complement": [
+                        "Deadlock"
+                    ]
+                }
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Reyna"
+            ],
+            "Initiator": [
+                "Kayo",
+                "Tejo"
+            ],
+            "Controller": [
+                "Viper",
+                "Harbor"
+            ],
+            "Sentinel": [
+                "Deadlock"
+            ]
+        }
+    },
+    "Haven": {
+        "best": {
+            "Duelist": [
+                {
+                    "name": "Jett",
+                    "complement": [
+                        "Phoenix"
+                    ]
+                },
+                {
+                    "name": "Neon",
+                    "complement": [
+                        "Phoenix"
+                    ]
+                }
+            ],
+            "Initiator": [
+                {
+                    "name": "Sova",
+                    "complement": [
+                        "Breach"
+                    ]
+                },
+                {
+                    "name": "Fade",
+                    "complement": [
+                        "Breach"
+                    ]
+                }
+            ],
+            "Controller": [
+                "Omen"
+            ],
+            "Sentinel": [
+                {
+                    "name": "Cypher",
+                    "complement": [
+                        "Chamber",
+                        "Sage"
+                    ]
+                },
+                {
+                    "name": "KillJoy",
+                    "complement": [
+                        "Chamber",
+                        "Sage"
+                    ]
+                }
+            ]
+        },
+        "better": {
+            "Duelist": [
+                {
+                    "name": "Yoru",
+                    "complement": [
+                        "Iso"
+                    ]
+                },
+                {
+                    "name": "Phoenix",
+                    "complement": [
+                        "Iso"
+                    ]
+                },
+                {
+                    "name": "Waylay",
+                    "complement": [
+                        "Iso"
+                    ]
+                },
+                {
+                    "name": "Raze",
+                    "complement": [
+                        "Iso"
+                    ]
+                }
+            ],
+            "Initiator": [
+                "Skye",
+                "Gekko"
+            ],
+            "Controller": [
+                {
+                    "name": "Clove",
+                    "complement": [
+                        "Viper"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                "Chamber",
+                "Sage"
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Reyna",
+                "Iso"
+            ],
+            "Initiator": [
+                {
+                    "name": "Breach",
+                    "complement": [
+                        "Tejo"
+                    ]
+                }
+            ],
+            "Controller": [
+                {
+                    "name": "Brimstone",
+                    "complement": [
+                        "Harbor"
+                    ]
+                },
+                {
+                    "name": "Astra",
+                    "complement": [
+                        "Harbor"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                "Vyse",
+                "Deadlock"
+            ]
+        }
+    },
+    "Icebox": {
+        "best": {
+            "Duelist": [
+                {
+                    "name": "Jett",
+                    "complement": [
+                        "Waylay"
+                    ]
+                },
+                {
+                    "name": "Reyna",
+                    "complement": [
+                        "Waylay"
+                    ]
+                },
+                {
+                    "name": "Iso",
+                    "complement": [
+                        "Waylay"
+                    ]
+                },
+                "Waylay"
+            ],
+            "Initiator": [
+                "Sova",
+                "Gekko"
+            ],
+            "Controller": [
+                {
+                    "name": "Viper",
+                    "complement": [
+                        "Harbor",
+                        "Clove"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                {
+                    "name": "KillJoy",
+                    "complement": [
+                        "Sage",
+                        "Chamber"
+                    ]
+                }
+            ]
+        },
+        "better": {
+            "Duelist": [
+                "Neon",
+                "Raze"
+            ],
+            "Initiator": [
+                "Fade"
+            ],
+            "Controller": [
+                {
+                    "name": "Harbor",
+                    "complement": [
+                        "Omen"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                "Sage",
+                "Chamber"
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Yoru"
+            ],
+            "Initiator": [
+                {
+                    "name": "Skye",
+                    "complement": [
+                        "Kayo"
+                    ]
+                },
+                {
+                    "name": "Tejo",
+                    "complement": [
+                        "Kayo"
+                    ]
+                }
+            ],
+            "Controller": [
+                "Astra",
+                "Clove"
+            ],
+            "Sentinel": [
+                "Vyse",
+                "Deadlock"
+            ]
+        }
+    },
+    "Lotus": {
+        "best": {
+            "Duelist": [
+                {
+                    "name": "Raze",
+                    "complement": [
+                        "Iso"
+                    ]
+                },
+                {
+                    "name": "Neon",
+                    "complement": [
+                        "Iso"
+                    ]
+                }
+            ],
+            "Initiator": [
+                {
+                    "name": "Fade",
+                    "complement": [
+                        "Breach",
+                        "Kayo"
+                    ]
+                }
+            ],
+            "Controller": [
+                {
+                    "name": "Brimstone",
+                    "complement": [
+                        "Viper"
+                    ]
+                },
+                {
+                    "name": "Omen",
+                    "complement": [
+                        "Viper"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                {
+                    "name": "KillJoy",
+                    "complement": [
+                        "Deadlock"
+                    ]
+                },
+                {
+                    "name": "Vyse",
+                    "complement": [
+                        "Deadlock"
+                    ]
+                },
+                "Deadlock"
+            ]
+        },
+        "better": {
+            "Duelist": [
+                "Yoru",
+                "Jett",
+                "Phoenix"
+            ],
+            "Initiator": [
+                {
+                    "name": "Gekko",
+                    "complement": [
+                        "Breach"
+                    ]
+                },
+                {
+                    "name": "Sova",
+                    "complement": [
+                        "Breach"
+                    ]
+                },
+                {
+                    "name": "Skye",
+                    "complement": [
+                        "Breach"
+                    ]
+                }
+            ],
+            "Controller": [
+                {
+                    "name": "Astra",
+                    "complement": [
+                        "Harbor"
+                    ]
+                },
+                {
+                    "name": "Clove",
+                    "complement": [
+                        "Harbor"
+                    ]
+                }
+            ],
+            "Sentinel": [
+                {
+                    "name": "Chamber",
+                    "complement": [
+                        "Sage"
+                    ]
+                },
+                {
+                    "name": "Cypher",
+                    "complement": [
+                        "Sage"
+                    ]
+                }
+            ]
+        },
+        "good": {
+            "Duelist": [
+                "Waylay",
+                "Reyna"
+            ],
+            "Initiator": [
+                "kayo",
+                "Tejo",
+                "Breach"
+            ],
+            "Controller": [
+                "Viper",
+                "Harbor"
+            ],
+            "Sentinel": [
+                "Sage"
+            ]
+        }
+    }
+}

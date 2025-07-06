@@ -4,16 +4,22 @@
 
 import { set, get, getAll, remove } from './db.js';
 
-import { Client, GatewayIntentBits, REST, Routes, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } from 'discord.js';
+import {
+    Client, GatewayIntentBits, ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle, REST, Routes, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ComponentType
+} from 'discord.js';
 import fs from 'fs';
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf-8'));
 
 import { info, lastmatch } from './methods.js'
-import { mapImages, agentImages } from './images.js';
+import { mapImages, agentImages, agentRoles } from './images.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
+const tiers = ["best", "better", "good"];
+const roles = ["Duelist", "Initiator", "Controller", "Sentinel"];
 
 
 const token = process.env.TOKEN
@@ -91,23 +97,6 @@ client.on('interactionCreate', async (interaction) => {
                 });
             }
 
-            const embed1 = new EmbedBuilder()
-                .setTitle(`📊 Valorant Ranked Match Summary`)
-                .setDescription(`Latest match details for **${matchData.currenttierpatched}** tier.`)
-                .setColor(0x00BFFF)
-                .setThumbnail(matchData.images.small)
-                .setImage(`attachment://${matchData.map.name}.png`)
-                .addFields(
-                    { name: '🏷️ Rank', value: `${matchData.currenttierpatched}`, inline: true },
-                    { name: '📈 ELO', value: `${matchData.elo}`, inline: true },
-                    { name: '📍 Map', value: `${matchData.map.name}`, inline: true },
-                    { name: '📊 Tier Ranking', value: `${matchData.ranking_in_tier}/100`, inline: true },
-                    { name: '🔺 MMR Change', value: `${matchData.mmr_change_to_last_game > 0 ? '+' : ''}${matchData.mmr_change_to_last_game}`, inline: true },
-                    { name: '🗓️ Date', value: `${matchData.date}`, inline: false }
-                )
-                .setFooter({ text: `Match ID: ${matchData.match_id}` })
-                .setTimestamp(new Date(matchData.date_raw * 1000));
-
             // fs.writeFileSync('output.txt', JSON.stringify(leaderBoard), 'utf8');
 
             const { metadata, players } = leaderBoard.data;
@@ -116,43 +105,62 @@ client.on('interactionCreate', async (interaction) => {
             const redTeam = players.all_players.filter(p => p.team === 'Red');
             const blueTeam = players.all_players.filter(p => p.team === 'Blue');
 
-            const formatTeam = (teamPlayers, teamColor) => {
-                let str = `\`\`\`fix\n# Player            Agent     Tier       K/D/A     Score  Dmg\n-------------------------------------------------------------\n`;
+            const formatTeam = (teamPlayers) => {
+                let str = "```fix\n";
+                str += "Player              K/D/A     Tier         (Agent)\n\n";
+
+
                 teamPlayers
                     .sort((a, b) => b.stats.score - a.stats.score)
-                    .forEach((p, idx) => {
-                        const nameTag = `${p.name}#${p.tag}`.padEnd(18);
-                        const agent = p.character.padEnd(9);
-                        const tier = p.currenttier_patched.padEnd(10);
+                    .forEach((p) => {
+                        const nameTag = `${p.name}#${p.tag}`.padEnd(20).slice(0, 20);
                         const kda = `${p.stats.kills}/${p.stats.deaths}/${p.stats.assists}`.padEnd(9);
-                        const score = p.stats.score.toString().padStart(5);
-                        const dmg = p.damage_made.toString().padStart(4);
-                        str += `${(idx + 1).toString().padStart(2)} ${nameTag}${agent}${tier}${kda}${score} ${dmg}\n`;
+                        const tier = p.currenttier_patched.padEnd(13).slice(0, 13);
+                        const agent = p.character.padEnd(10).slice(0, 10);
+                        str += `${nameTag}${kda}${tier}(${agent})\n`;
                     });
-                str += '```';
+
+                str += "```";
                 return str;
             };
 
-            const matchInfo =
-                `🗺️ **Map:** ${metadata.map}\n` +
-                `🎮 **Mode:** ${metadata.mode}\n` +
-                `🕒 **Started:** ${metadata.game_start_patched}\n` +
-                `📍 **Region:** ${metadata.region} (${metadata.cluster})\n` +
-                `🔢 **Rounds Played:** ${metadata.rounds_played}`;
-
-            const embed2 = new EmbedBuilder()
+            const embed = new EmbedBuilder()
                 .setTitle(`🏆 Valorant Match Summary`)
-                .setDescription(matchInfo)
+                // .setDescription(`\nEnemy Team\n${formatTeam(redTeam, 'Red')}\nPlayer Team\n${formatTeam(blueTeam, 'Blue')}`)
+                // .setThumbnail(interaction.user.displayAvatarURL({ dynamic: true }))
+
                 .addFields(
-                    { name: '🔴 Red Team', value: formatTeam(redTeam, 'Red') },
-                    { name: '🔵 Blue Team', value: formatTeam(blueTeam, 'Blue') }
+                    {
+                        name: "Started",
+                        value: String(metadata.game_start_patched || "Unknown"),
+                        inline: true
+                    }, {
+                    name: "Map",
+                    value: String(metadata.map || "Unknown"),
+                    inline: true
+                }, {
+                    name: "Mode",
+                    value: String(metadata.mode || "Unknown"),
+                    inline: true
+                }, {
+                    name: "Region",
+                    value: String(metadata.region || "Unknown"),
+                    inline: true
+                }, {
+                    name: "Rounds Played",
+                    value: String(metadata.rounds_played || "Unknown"),
+                    inline: true
+                },
+                    { name: 'Enemy Team', value: formatTeam(redTeam, 'Red') },
+                    { name: 'Player Team', value: formatTeam(blueTeam, 'Blue') }
                 )
-                .setColor(0x5865F2)
+                .setImage(`attachment://${matchData.map.name}.png`)
+                .setColor(0xFF4F4F)
                 .setFooter({ text: 'Powered by Valorant Unofficial API' });
 
 
             return interaction.editReply({
-                embeds: [embed1, embed2],
+                embeds: [embed],
                 files: [mapImages[matchData.map.name] || mapImages["Ascent"]]
             });
         } catch (err) {
@@ -160,10 +168,175 @@ client.on('interactionCreate', async (interaction) => {
         }
     }
 
+
+    if (interaction.commandName === 'agents') {
+        await interaction.deferReply();
+
+        try {
+
+            let map = interaction.options.getString('map');
+            let agent = interaction.options.getString('agent');
+
+            if (!map && !agent) {
+
+                let agents = await getAll("agents.json");
+
+                const roles = Object.keys(agentRoles);
+                const agentsByRole = {};
+                for (const role of roles) {
+                    agentsByRole[role] = agents.filter(a => a.role === role);
+                }
+
+                const embeds = [];
+                const files = [];
+
+                roles.forEach(role => {
+                    const agentList = agentsByRole[role]
+                        .map(a => `• **${a.agent}**`)
+                        .join('\n');
+
+                    const file = agentRoles[role];
+
+                    files.push(file);
+
+                    const embed = new EmbedBuilder()
+                        .setTitle(`${role}s`)
+                        .setDescription(agentList || 'No agents found.')
+                        .setThumbnail(`attachment://${file.name}`)
+                        .setColor(0xFF4F4F)
+                        .setFooter({ text: `Total: ${agentsByRole[role].length} ${role}s` });
+
+                    embeds.push(embed);
+                });
+
+                let currentIndex = 0;
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId('prev')
+                        .setLabel('⬅️')
+                        .setStyle(ButtonStyle.Secondary),
+                    new ButtonBuilder()
+                        .setCustomId('next')
+                        .setLabel('➡️')
+                        .setStyle(ButtonStyle.Secondary)
+                );
+
+                const message = await interaction.editReply({
+                    embeds: [embeds[currentIndex]],
+                    files: [files[currentIndex]],
+                    components: [row],
+                    fetchReply: true
+                });
+
+                const collector = message.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: 60000
+                });
+
+                collector.on('collect', async i => {
+                    if (i.user.id !== interaction.user.id)
+                        return i.reply({ content: 'Only the command user can interact.', ephemeral: true });
+
+                    if (i.customId === 'next') currentIndex = (currentIndex + 1) % embeds.length;
+                    if (i.customId === 'prev') currentIndex = (currentIndex - 1 + embeds.length) % embeds.length;
+
+                    await i.update({
+                        embeds: [embeds[currentIndex]],
+                        files: [files[currentIndex]],
+                        components: [row]
+                    });
+                });
+            }
+
+            if (map && !agent) {
+
+                const embeds = [];
+                const mapData =  (await getAll("map.json"))[map];
+                for (const tier of tiers) {
+                    const embed = new EmbedBuilder()
+                        .setTitle(` ${tier.charAt(0).toUpperCase() + tier.slice(1)} Agents`)
+                        .setColor(0xFF4F4F);
+
+                    for (const role of roles) {
+                        const agentList = mapData[tier]?.[role];
+
+                        if (!agentList || agentList.length === 0) continue;
+
+                        const formatted = agentList.map(agent => {
+                            if (typeof agent === 'string') {
+                                return `• **${agent}**`;
+                            } else {
+                                const { name, complement } = agent;
+                                const compStr = complement.length > 0
+                                    ? ` _(w/ ${complement.join(', ')})_`
+                                    : '';
+                                return `• **${name}**${compStr}`;
+                            }
+                        }).join('\n');
+
+                        embed.addFields({ name: role, value: formatted, inline: false });
+                    }
+
+                    embeds.push(embed);
+                }
+
+                // Buttons
+                let currentIndex = 0;
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('prev').setLabel('⬅️').setStyle(ButtonStyle.Secondary),
+                    new ButtonBuilder().setCustomId('next').setLabel('➡️').setStyle(ButtonStyle.Secondary)
+                );
+
+                // Send initial embed
+                const message = await interaction.editReply({
+                    embeds: [embeds[currentIndex]],
+                    components: [row],
+                    fetchReply: true
+                });
+
+                // Collector
+                const collector = message.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: 60000
+                });
+
+                collector.on('collect', async i => {
+                    if (i.user.id !== interaction.user.id)
+                        return i.reply({ content: 'Only you can interact with this.', ephemeral: true });
+
+                    if (i.customId === 'next') currentIndex = (currentIndex + 1) % embeds.length;
+                    if (i.customId === 'prev') currentIndex = (currentIndex - 1 + embeds.length) % embeds.length;
+
+                    await i.update({
+                        embeds: [embeds[currentIndex]],
+                        components: [row]
+                    });
+                });
+
+                collector.on('end', async () => {
+                    const disabledRow = new ActionRowBuilder().addComponents(
+                        new ButtonBuilder().setCustomId('prev').setLabel('⬅️').setStyle(ButtonStyle.Secondary).setDisabled(true),
+                        new ButtonBuilder().setCustomId('next').setLabel('➡️').setStyle(ButtonStyle.Secondary).setDisabled(true)
+                    );
+
+                    await message.edit({
+                        components: [disabledRow]
+                    });
+                });
+            }
+
+        } catch (err) {
+            console.log("Error ocurred : ", err)
+        }
+
+    }
+
+
+
     if (interaction.commandName === 'info') {
         await interaction.deferReply();
 
-        try {    
+        try {
 
             let name = interaction.options.getString('name');
             let tag = interaction.options.getString('tag');
@@ -192,8 +365,8 @@ client.on('interactionCreate', async (interaction) => {
 
             const embed = new EmbedBuilder()
                 .setTitle(`📊 Rank Info - ${infoData.data.name}#${infoData.data.tag}`)
-                .setThumbnail(accountData.data.card?.small || null)
-                .setImage(infoData.data.images?.large || null)
+                .setThumbnail(infoData.data.images?.large || null)
+                .setImage(accountData.data.card?.wide || null)
                 .addFields(
                     {
                         name: "Current Rank",
@@ -221,12 +394,11 @@ client.on('interactionCreate', async (interaction) => {
                         inline: true
                     }
                 )
-                .setColor(0x5865F2)
+                .setColor(0xFF4F4F)
                 .setFooter({
-                    text: "Powered by Valorant Unofficial API",
-                    iconURL: accountData.data.card?.wide || null
+                    text: "Powered by ValoBuddy API and services.",
+                    iconURL: accountData.data.card?.small || null
                 });
-
 
             return interaction.editReply({ embeds: [embed] });
 

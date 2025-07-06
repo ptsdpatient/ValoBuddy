@@ -26,9 +26,7 @@ export async function lastmatch(region, name, tag) {
         Authorization: key
       }
     })
-
-
-
+    
     return {
       matchData:res.data.data[0],
       leaderBoard:matchResponse.data
@@ -41,7 +39,6 @@ export async function lastmatch(region, name, tag) {
     };
   }
 }
-
 
 
 export async function info(region, name, tag) {
@@ -57,8 +54,6 @@ export async function info(region, name, tag) {
         headers: { Authorization: key }
       })
     ]);
-
-    console.log(JSON.stringify(accountResponse.data))
 
     return {
       infoData: mmrResponse.data,
