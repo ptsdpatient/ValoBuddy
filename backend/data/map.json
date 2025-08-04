@@ -455,7 +455,7 @@
                     ]
                 },
                 {
-                    "name": "KillJoy",
+                    "name": "Killjoy",
                     "complement": [
                         "Chamber",
                         "Sage"
@@ -560,8 +560,7 @@
                     "complement": [
                         "Waylay"
                     ]
-                },
-                "Waylay"
+                }
             ],
             "Initiator": [
                 "Sova",
@@ -578,7 +577,7 @@
             ],
             "Sentinel": [
                 {
-                    "name": "KillJoy",
+                    "name": "Killjoy",
                     "complement": [
                         "Sage",
                         "Chamber"
@@ -676,7 +675,7 @@
             ],
             "Sentinel": [
                 {
-                    "name": "KillJoy",
+                    "name": "Killjoy",
                     "complement": [
                         "Deadlock"
                     ]
@@ -751,7 +750,7 @@
                 "Reyna"
             ],
             "Initiator": [
-                "kayo",
+                "Kayo",
                 "Tejo",
                 "Breach"
             ],

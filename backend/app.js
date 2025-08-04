@@ -9,16 +9,23 @@ import {
     ButtonBuilder,
     ButtonStyle, REST, Routes, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ComponentType
 } from 'discord.js';
+
 import fs from 'fs';
+
 const commands = JSON.parse(fs.readFileSync('./commands.json', 'utf-8'));
 
 import { info, lastmatch } from './methods.js'
-import { mapImages, agentImages, agentRoles } from './images.js';
+import { mapImages, agentRoles } from './images.js';
 
 import dotenv from 'dotenv';
+import { combineAgentImages } from './suggestionImageCombiner.js';
+
+import { pickBalancedTeam } from './pickRandomAgent.js';
+
 dotenv.config();
 
-const tiers = ["best", "better", "good"];
+const tiers = ["best"];
+
 const roles = ["Duelist", "Initiator", "Controller", "Sentinel"];
 
 
@@ -49,7 +56,7 @@ client.once('ready', async () => {
             console.log('🔁 Registering slash commands from JSON...');
             await rest.put(
                 Routes.applicationCommands(process.env.ID),
-                { body: commands }
+                { body : commands }
             );
             console.log('✅ Slash commands registered!');
         } catch (err) {
@@ -72,9 +79,11 @@ client.on('interactionCreate', async (interaction) => {
         try {
             let name = interaction.options.getString('name');
             let tag = interaction.options.getString('tag');
+            let discord_user = interaction.options.get('discord_user');
             let region = interaction.options.getString('region') || 'ap';
 
-            if (!name || !tag) {
+            if ((!name && !tag) || discord_user) {
+                console.log(JSON.stringify(discord_user))
                 const userData = await get('users.json', interaction.user.id);
 
                 if (!userData) {
@@ -116,7 +125,8 @@ client.on('interactionCreate', async (interaction) => {
                         const nameTag = `${p.name}#${p.tag}`.padEnd(20).slice(0, 20);
                         const kda = `${p.stats.kills}/${p.stats.deaths}/${p.stats.assists}`.padEnd(9);
                         const tier = p.currenttier_patched.padEnd(13).slice(0, 13);
-                        const agent = p.character.padEnd(10).slice(0, 10);
+                        const agent = p.character
+                        // .padEnd(10).slice(0, 10);
                         str += `${nameTag}${kda}${tier}(${agent})\n`;
                     });
 
@@ -151,8 +161,8 @@ client.on('interactionCreate', async (interaction) => {
                     value: String(metadata.rounds_played || "Unknown"),
                     inline: true
                 },
-                    { name: 'Enemy Team', value: formatTeam(redTeam, 'Red') },
-                    { name: 'Player Team', value: formatTeam(blueTeam, 'Blue') }
+                    { name: 'Winner Team', value: formatTeam(redTeam, 'Red') },
+                    { name: 'Loser Team', value: formatTeam(blueTeam, 'Blue') }
                 )
                 .setImage(`attachment://${matchData.map.name}.png`)
                 .setColor(0xFF4F4F)
@@ -170,6 +180,7 @@ client.on('interactionCreate', async (interaction) => {
 
 
     if (interaction.commandName === 'agents') {
+        console.log("command received")
         await interaction.deferReply();
 
         try {
@@ -192,7 +203,7 @@ client.on('interactionCreate', async (interaction) => {
 
                 roles.forEach(role => {
                     const agentList = agentsByRole[role]
-                        .map(a => `• **${a.agent}**`)
+                        .map(a => `• ${a.agent}`)
                         .join('\n');
 
                     const file = agentRoles[role];
@@ -213,11 +224,11 @@ client.on('interactionCreate', async (interaction) => {
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
                         .setCustomId('prev')
-                        .setLabel('⬅️')
+                        .setLabel('Back')
                         .setStyle(ButtonStyle.Secondary),
                     new ButtonBuilder()
                         .setCustomId('next')
-                        .setLabel('➡️')
+                        .setLabel('Next')
                         .setStyle(ButtonStyle.Secondary)
                 );
 
@@ -250,83 +261,61 @@ client.on('interactionCreate', async (interaction) => {
 
             if (map && !agent) {
 
-                const embeds = [];
-                const mapData =  (await getAll("map.json"))[map];
+                let embed;
+                const mapData = (await getAll("map.json"))[map];
+                const randomAgents = {}
+
+                let attachment = []
+
                 for (const tier of tiers) {
-                    const embed = new EmbedBuilder()
-                        .setTitle(` ${tier.charAt(0).toUpperCase() + tier.slice(1)} Agents`)
+                    randomAgents[tier] = {}
+                    embed = new EmbedBuilder()
+                        .setTitle(` ${tier.charAt(0).toUpperCase() + tier.slice(1)} Agents for ${map}`)
+                        .setImage(`attachment://${map}.png`)
                         .setColor(0xFF4F4F);
 
                     for (const role of roles) {
                         const agentList = mapData[tier]?.[role];
 
+                        randomAgents[tier][role] = []
+
                         if (!agentList || agentList.length === 0) continue;
 
                         const formatted = agentList.map(agent => {
+
                             if (typeof agent === 'string') {
-                                return `• **${agent}**`;
+                                randomAgents[tier][role].push(agent)
+                                return `• ${agent}`;
                             } else {
                                 const { name, complement } = agent;
                                 const compStr = complement.length > 0
                                     ? ` _(w/ ${complement.join(', ')})_`
                                     : '';
-                                return `• **${name}**${compStr}`;
+                                randomAgents[tier][role].push(name, complement)
+                                return `• ${name} ${compStr}`;
                             }
                         }).join('\n');
 
                         embed.addFields({ name: role, value: formatted, inline: false });
                     }
 
-                    embeds.push(embed);
-                }
+                    embed.addFields({ name: "Suggested agents.", value: '', inline: false }).setFooter({ text: `Powered by ValoBuddy API and services.` });
 
-                // Buttons
-                let currentIndex = 0;
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId('prev').setLabel('⬅️').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('next').setLabel('➡️').setStyle(ButtonStyle.Secondary)
-                );
+                    attachment.push(await combineAgentImages(pickBalancedTeam(randomAgents[tier]), tier));
 
-                // Send initial embed
-                const message = await interaction.editReply({
-                    embeds: [embeds[currentIndex]],
-                    components: [row],
+                    embed.setImage(`attachment://combined-${tier}.png`).setThumbnail(`attachment://${map}.png`);
+
+                }          
+
+                return interaction.editReply({
+                    embeds: [embed],
+                    files: [...attachment, mapImages[map] || mapImages['Ascent']],            
                     fetchReply: true
-                });
-
-                // Collector
-                const collector = message.createMessageComponentCollector({
-                    componentType: ComponentType.Button,
-                    time: 60000
-                });
-
-                collector.on('collect', async i => {
-                    if (i.user.id !== interaction.user.id)
-                        return i.reply({ content: 'Only you can interact with this.', ephemeral: true });
-
-                    if (i.customId === 'next') currentIndex = (currentIndex + 1) % embeds.length;
-                    if (i.customId === 'prev') currentIndex = (currentIndex - 1 + embeds.length) % embeds.length;
-
-                    await i.update({
-                        embeds: [embeds[currentIndex]],
-                        components: [row]
-                    });
-                });
-
-                collector.on('end', async () => {
-                    const disabledRow = new ActionRowBuilder().addComponents(
-                        new ButtonBuilder().setCustomId('prev').setLabel('⬅️').setStyle(ButtonStyle.Secondary).setDisabled(true),
-                        new ButtonBuilder().setCustomId('next').setLabel('➡️').setStyle(ButtonStyle.Secondary).setDisabled(true)
-                    );
-
-                    await message.edit({
-                        components: [disabledRow]
-                    });
-                });
+                });                
             }
 
         } catch (err) {
-            console.log("Error ocurred : ", err)
+            console.log("Error ocurred Discord interraction problem.")
         }
 
     }
@@ -357,7 +346,7 @@ client.on('interactionCreate', async (interaction) => {
 
             const { infoData, accountData } = (await info(region, name, tag));
 
-            if (infoData.error) {
+            if (!infoData) {
                 return interaction.editReply({
                     content: `❌ Error:\n\`\`\`Something is wrong in the provided information!\`\`\``
                 });
@@ -501,6 +490,11 @@ client.on('interactionCreate', async (interaction) => {
         }
     }
 
+    if (!interaction.replied || !interaction.deferred) {
+        return interaction.editReply({
+            content: '⚠️ Something went wrong while processing the command.'
+        });
+    }
 
 
 });

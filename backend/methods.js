@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import axios from 'axios';
 import fs from 'fs';
+import { json } from 'stream/consumers';
 
 dotenv.config();
 
@@ -8,10 +9,9 @@ const key = process.env.KEY
 
 
 export async function lastmatch(region, name, tag) {
-  const url = `https://api.henrikdev.xyz/valorant/v1/mmr-history/${region || 'ap'}/${name}/${tag}`;
 
   try {
-    const res = await axios.get(url, {
+    const res = await axios.get(`https://api.henrikdev.xyz/valorant/v1/mmr-history/${region || 'ap'}/${name}/${tag}`, {
       headers: {
         Authorization: key
       }
@@ -21,15 +21,19 @@ export async function lastmatch(region, name, tag) {
       return { error: 'No match history found.' };
     }
 
-    const matchResponse = await axios.get(`https://api.henrikdev.xyz/valorant/v2/match/${res.data.data[0].match_id}`,{
+    const matchResponse = await axios.get(`https://api.henrikdev.xyz/valorant/v2/match/${res.data.data[0].match_id}`, {
       headers: {
         Authorization: key
       }
     })
-    
+
+    // fs.writeFileSync('log.txt',
+    //   JSON.stringify(res.data.data[0]) + '\n\n\n' + JSON.stringify(matchResponse.data)
+    // );
+
     return {
-      matchData:res.data.data[0],
-      leaderBoard:matchResponse.data
+      matchData: res.data.data[0],
+      leaderBoard: matchResponse.data
     };
 
   } catch (err) {
@@ -58,13 +62,13 @@ export async function info(region, name, tag) {
     return {
       infoData: mmrResponse.data,
       accountData: accountResponse.data,
-      error:false
+      error: false
     };
 
   } catch (err) {
+    console.log("Error ocurred : ", err)
     return {
-      error: err.response?.data || err.message,
-      status: err.response?.status || 500
+      infoData: false
     };
   }
 }
